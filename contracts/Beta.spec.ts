@@ -4,7 +4,7 @@ import { deploySFLContracts, TestAccount, gasLimit } from "./test-support";
 describe("Beta contract", () => {
   it("creates a farm with no donation", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const donation = 0;
     const { beta, farm } = await deploySFLContracts(web3);
@@ -47,7 +47,7 @@ describe("Beta contract", () => {
 
   it("creates a farm with a donation", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { beta, farm } = await deploySFLContracts(web3);
@@ -98,7 +98,7 @@ describe("Beta contract", () => {
 
   it("requires signature charity address to match in order to create a farm", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const { beta } = await deploySFLContracts(web3);
 
@@ -126,7 +126,7 @@ describe("Beta contract", () => {
 
   it("requires signature donation to match in order to create a farm", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const { beta } = await deploySFLContracts(web3);
 
@@ -153,7 +153,7 @@ describe("Beta contract", () => {
 
   it("only creates a farm once per user", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const donation = 0;
     const { beta, farm } = await deploySFLContracts(web3);
@@ -188,7 +188,7 @@ describe("Beta contract", () => {
 
   it("transfers the signing role", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const { beta, farm } = await deploySFLContracts(web3);
 

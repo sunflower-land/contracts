@@ -4,7 +4,7 @@ import { deploySFLContracts, TestAccount, gasLimit } from "./test-support";
 describe("Farm contract", () => {
   it("deploys with total supply zero", async function () {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);
@@ -16,7 +16,7 @@ describe("Farm contract", () => {
 
   it("does not pass the game role", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);
@@ -32,7 +32,7 @@ describe("Farm contract", () => {
 
   it("passes the game role", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);
@@ -84,7 +84,7 @@ describe("Farm contract", () => {
 
   it("does not mint a farm without permission", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);
@@ -102,7 +102,7 @@ describe("Farm contract", () => {
 
   it("mints a farm", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const { farm } = await deploySFLContracts(web3);
 
@@ -134,7 +134,7 @@ describe("Farm contract", () => {
 
   it("mints multiple farms", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const { farm } = await deploySFLContracts(web3);
 
@@ -171,7 +171,7 @@ describe("Farm contract", () => {
 
   it("does not change the baseURI without permission", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);
@@ -189,7 +189,7 @@ describe("Farm contract", () => {
 
   it("updates the baseURI", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);
@@ -219,7 +219,7 @@ describe("Farm contract", () => {
 
   it("does not transfer the farm without permission", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);
@@ -244,7 +244,7 @@ describe("Farm contract", () => {
 
   it("transfers the farm", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);
@@ -287,7 +287,7 @@ describe("Farm contract", () => {
 
   it("does not approve a farm without permission", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);
@@ -310,7 +310,7 @@ describe("Farm contract", () => {
 
   it("does not burn a farm without permission", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);
@@ -333,7 +333,7 @@ describe("Farm contract", () => {
 
   it("burns a farm", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);
@@ -370,7 +370,7 @@ describe("Farm contract", () => {
 
   it("transfers a farm", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);
@@ -404,7 +404,7 @@ describe("Farm contract", () => {
 
   it("pause and plays transfers", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
 
     const { farm } = await deploySFLContracts(web3);

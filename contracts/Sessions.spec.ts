@@ -14,7 +14,7 @@ describe("Session contract", () => {
           params: [seconds],
           id: id,
         },
-        (err1) => {
+        (err1: any) => {
           if (err1) return reject(err1);
 
           web3.currentProvider.send(
@@ -23,7 +23,7 @@ describe("Session contract", () => {
               method: "evm_mine",
               id: id + 1,
             },
-            (err2, res) => {
+            (err2: any, res: any) => {
               return err2 ? reject(err2) : resolve(res);
             }
           );
@@ -37,7 +37,7 @@ describe("Session contract", () => {
 
     it("requires the transaction is submitted before the deadline", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session } = await deploySFLContracts(web3);
 
@@ -74,7 +74,7 @@ describe("Session contract", () => {
 
     it("requires the session ID matches", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session } = await deploySFLContracts(web3);
 
@@ -108,7 +108,7 @@ describe("Session contract", () => {
 
     it("requires the sender owns the farm", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -151,7 +151,7 @@ describe("Session contract", () => {
 
     it("mints items for a farm", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm, inventory, token } = await deploySFLContracts(
         web3
@@ -229,7 +229,7 @@ describe("Session contract", () => {
 
     it("requires the mint IDs are in the signature", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -284,7 +284,7 @@ describe("Session contract", () => {
 
     it("burns items for a farm", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm, inventory, token } = await deploySFLContracts(
         web3
@@ -355,7 +355,7 @@ describe("Session contract", () => {
 
     it("requires the burn IDs are in the signature", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -409,7 +409,7 @@ describe("Session contract", () => {
 
     it("requires a new the session ID", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm, inventory, token } = await deploySFLContracts(
         web3
@@ -511,7 +511,7 @@ describe("Session contract", () => {
 
     it("requires a sufficient fee", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -556,7 +556,7 @@ describe("Session contract", () => {
 
     it("takes the fee", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -604,7 +604,7 @@ describe("Session contract", () => {
 
     it("throttles the sync method", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -671,7 +671,7 @@ describe("Session contract", () => {
 
     it("requires the transaction is submitted before the deadline", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session } = await deploySFLContracts(web3);
 
@@ -706,7 +706,7 @@ describe("Session contract", () => {
 
     it("requires the session ID matches", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session } = await deploySFLContracts(web3);
 
@@ -738,7 +738,7 @@ describe("Session contract", () => {
 
     it("requires the sender owns the farm", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -779,7 +779,7 @@ describe("Session contract", () => {
 
     it("withdraws items for a farm", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm, inventory, token } = await deploySFLContracts(
         web3
@@ -865,7 +865,7 @@ describe("Session contract", () => {
 
     it("requires the tax is in the signature", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -906,7 +906,7 @@ describe("Session contract", () => {
 
     it("requires a new the session ID", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm, inventory, token } = await deploySFLContracts(
         web3
@@ -999,7 +999,7 @@ describe("Session contract", () => {
 
     it("takes the SFL tax", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm, token, wishingWell } = await deploySFLContracts(
         web3
@@ -1068,7 +1068,7 @@ describe("Session contract", () => {
 
     it("withdraws multiple times", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm, token, wishingWell } = await deploySFLContracts(
         web3
