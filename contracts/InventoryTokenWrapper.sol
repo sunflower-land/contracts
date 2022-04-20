@@ -17,6 +17,14 @@ contract SunflowerLandTokenWrapper is Wrapped1155Factory, GameOwner {
         inventory = _inventory;
     }
 
+    function gameDeployWrappedToken(uint256 tokenID, bytes calldata data)
+        public
+        onlyGame
+        returns (Wrapped1155)
+    {
+        return Wrapped1155(requireWrapped1155(inventory, tokenID, data));
+    }
+
     function balanceOf(address account, uint256 tokenID, bytes calldata data) 
         public 
         view 
@@ -26,23 +34,25 @@ contract SunflowerLandTokenWrapper is Wrapped1155Factory, GameOwner {
         return wrappedToken.balanceOf(account);
     }
 
-    function gameDeployWrappedToken(uint256 tokenID, bytes calldata data)
-        public
-        onlyGame
-        returns (Wrapped1155)
-    {
-        return Wrapped1155(requireWrapped1155(inventory, tokenID, data));
-    }
-
-    function getWrappedTokenAddress(uint256 tokenID, bytes calldata data)
+    function getWrappedToken(uint256 tokenID, bytes calldata data)
         public
         returns (Wrapped1155)
     {
         return Wrapped1155(getWrapped1155(inventory, tokenID, data));
     }
 
-    
+    function depositWrappedTokensToFarm(
+        address farm,
+        uint256[] calldata tokenIDs, 
+        uint256[] calldata amounts,
+        bytes calldata data
+    )
+        public
+        returns (bool)
+    {
+        batchUnwrap(inventory, tokenIDs, amounts, farm, data);
 
-    
+        return true;
+    }
 
 }

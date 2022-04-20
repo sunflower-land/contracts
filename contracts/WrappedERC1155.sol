@@ -100,7 +100,7 @@ contract Wrapped1155Factory is ERC1155Receiver {
         address recipient,
         bytes calldata data
     )
-        external
+        internal
     {
         getWrapped1155(multiToken, tokenId, data).burn(msg.sender, amount);
         multiToken.safeTransferFrom(address(this), recipient, tokenId, amount, data);
@@ -113,7 +113,7 @@ contract Wrapped1155Factory is ERC1155Receiver {
         address recipient,
         bytes calldata data
     )
-        external
+        internal
     {
         require(tokenIds.length == amounts.length, "Wrapped1155Factory: mismatched input arrays");
         require(tokenIds.length.mul(65) == data.length, "Wrapped1155Factory: data bytes should be ids size");

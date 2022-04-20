@@ -347,4 +347,91 @@ describe("InventoryTokenWrapper contract", () => {
 
   });
 
+  it("unwraps wrapped tokens to a farm", async () => {
+    const web3 = new Web3(
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK? process.env.ETH_NETWORK: "")
+    );
+
+    const { tokenWrapper, inventory, farm } = await deploySFLContracts(web3);
+
+    await farm.methods.mint(TestAccount.PLAYER.address).send({
+      from: TestAccount.TEAM.address,
+      gasPrice: await web3.eth.getGasPrice(),
+      gas: gasLimit,
+    });
+
+    const farmNFT = await farm.methods
+      .getFarm(1)
+      .call({ from: TestAccount.PLAYER.address });
+
+    const tokenData = getTokenBytecode("Token1", "TK1", 18);
+
+    await tokenWrapper.methods
+      .gameDeployWrappedToken(1, tokenData).send({
+      from: TestAccount.TEAM.address,
+      gasPrice: await web3.eth.getGasPrice(),
+      gas: gasLimit,
+    });
+
+    await inventory.methods
+      .gameMint(TestAccount.PLAYER.address, [1], [500], tokenData )
+      .send({
+        from: TestAccount.TEAM.address,
+        gasPrice: await web3.eth.getGasPrice(),
+        gas: gasLimit,
+    });
+
+    expect(await 
+      inventory.methods
+      .balanceOf(TestAccount.PLAYER.address, 1)
+      .call(
+        {from: TestAccount.PLAYER.address}))
+    .toEqual("500");
+
+    await inventory.methods
+      .gameTransferFrom(
+        TestAccount.PLAYER.address, 
+        tokenWrapper.options.address, 
+        [1],
+        [100],
+        tokenData
+      )
+      .send({
+        from: TestAccount.TEAM.address,
+        gasPrice: await web3.eth.getGasPrice(),
+        gas: gasLimit,
+      });
+    
+    const playerInventory = await inventory.methods
+      .balanceOf(TestAccount.PLAYER.address, 1)
+      .call({from: TestAccount.PLAYER.address});
+    expect(playerInventory).toEqual("400");
+
+    const playerWrappedTokens = await tokenWrapper.methods
+      .balanceOf(TestAccount.PLAYER.address, 1, tokenData)
+      .call({from: TestAccount.PLAYER.address});
+    expect(playerWrappedTokens).toEqual("100");
+
+    await tokenWrapper.methods
+      .depositWrappedTokensToFarm(farmNFT.account, [1], [100], tokenData)
+      .send({
+        from: TestAccount.PLAYER.address,
+        gasPrice: await web3.eth.getGasPrice(),
+        gas: gasLimit,
+      });
+
+    const farmInventory = await inventory.methods
+      .balanceOf(farmNFT.account, 1)
+      .call({from: TestAccount.PLAYER.address});
+    expect(farmInventory).toEqual("100");
+
+    const playerWrappedTokensAfterDeposit = await tokenWrapper.methods
+      .balanceOf(farmNFT.account, 1, tokenData)
+      .call({from: TestAccount.PLAYER.address});
+    expect(playerWrappedTokensAfterDeposit).toEqual("0");
+    
+    
+
+  });
+
 });
