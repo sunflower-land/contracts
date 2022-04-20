@@ -11,6 +11,7 @@ import "./Token.sol";
 import "./Farm.sol";
 // import "./Uniswap.sol";
 import "./GameOwner.sol";
+import "./InventoryTokenWrapper.sol";
 
 contract SunflowerLandSession is Ownable, GameOwner {
     using ECDSA for bytes32;
@@ -43,14 +44,16 @@ contract SunflowerLandSession is Ownable, GameOwner {
     SunflowerLandInventory inventory;
     SunflowerLandToken token;
     SunflowerLand farm;
+    SunflowerLandTokenWrapper tokenWrapper;
 
     // Enable for deploy - disable for testing
     //IUniswapV2Router02 public immutable uniswapV2Router;
 
-    constructor(SunflowerLandInventory _inventory, SunflowerLandToken _token, SunflowerLand _farm) payable {
+    constructor(SunflowerLandInventory _inventory, SunflowerLandToken _token, SunflowerLand _farm, SunflowerLandTokenWrapper _tokenWrapper) payable {
         inventory = _inventory;
         token = _token;
         farm = _farm;
+        tokenWrapper = _tokenWrapper;
         signer = _msgSender();
         syncFeeWallet = _msgSender();
         withdrawFeeWallet = _msgSender();
@@ -248,8 +251,7 @@ contract SunflowerLandSession is Ownable, GameOwner {
         uint256[] memory ids,
         uint256[] memory amounts,
         uint256 sfl,
-        // 100 = 10%
-        uint tax
+        uint256 tax
     ) public isReady(farmId) returns (bool) {
        require(deadline >= block.timestamp, "SunflowerLand: Deadline Passed");
 
@@ -266,7 +268,7 @@ contract SunflowerLandSession is Ownable, GameOwner {
         syncedAt[farmId] = block.timestamp;
 
         // Verify
-        bytes32 txHash = keccak256(abi.encode(sessionId, deadline,  _msgSender(), farmId, ids, amounts, sfl, tax));
+        bytes32 txHash = keccak256(abi.encode(sessionId, deadline, _msgSender(), farmId, ids, amounts, sfl, tax));
         require(!executed[txHash], "SunflowerLand: Tx Executed");
         require(verify(txHash, signature), "SunflowerLand: Unauthorised");
         executed[txHash] = true;
@@ -287,7 +289,58 @@ contract SunflowerLandSession is Ownable, GameOwner {
         // Withdraw from farm
         uint remaining = sfl - teamFee;
         inventory.gameTransferFrom(farmNFT.account, _msgSender(), ids, amounts, "");
+        // inventory.gameTransferFrom(_msgSender(), address(tokenWrapper), ids, amounts, "");
         token.gameTransfer(farmNFT.account, _msgSender(), remaining);
+
+        emit SessionChanged(farmNFT.owner, newSessionId, farmId);
+
+        return true;
+    }
+
+    function withdrawResources(
+        // Verification
+        bytes memory signature,
+        bytes32 sessionId,
+        uint deadline,
+        // Data
+        uint farmId,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes calldata itemData
+    ) public isReady(farmId) returns (bool) {
+       require(deadline >= block.timestamp, "SunflowerLand: Deadline Passed");
+
+        // Check the session is new or has not changed (already saved or withdrew funds)
+        bytes32 farmSessionId = getSessionId(farmId);
+        require(
+            farmSessionId == sessionId,
+            "SunflowerLand: Session has changed"
+        );
+
+        // Start a new session
+        bytes32 newSessionId = generateSessionId(farmId);
+        sessions[farmId] = newSessionId;
+        syncedAt[farmId] = block.timestamp;
+
+        // // Verify
+        bytes32 txHash = keccak256(abi.encode(sessionId, deadline, _msgSender(), farmId, ids, amounts, itemData));
+        require(!executed[txHash], "SunflowerLand: Tx Executed");
+        require(verify(txHash, signature), "SunflowerLand: Unauthorised");
+        executed[txHash] = true;
+
+        // Get the holding address of the farm
+        Farm memory farmNFT = farm.getFarm(farmId);
+
+        // Check they own the farm
+        require(
+            farmNFT.owner == _msgSender(),
+            "SunflowerLand: You do not own this farm"
+        );
+
+        // Withdraw NFTs from farm
+        inventory.gameTransferFrom(farmNFT.account, _msgSender(), ids, amounts, itemData);
+        // Tokenize NFTs
+        inventory.gameTransferFrom(_msgSender(), address(tokenWrapper), ids, amounts, itemData);
 
         emit SessionChanged(farmNFT.owner, newSessionId, farmId);
 

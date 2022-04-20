@@ -2,6 +2,8 @@ import Web3 from "web3";
 import { AbiItem } from "web3-utils";
 import abijson from "../bin/contracts/combined.json";
 
+const web3Utils = require('web3-utils');
+
 export const gasLimit = 6721975;
 
 export class TestAccount {
@@ -52,11 +54,18 @@ export async function deploySFLContracts(web3: Web3) {
     ),
   ]);
 
+  const tokenWrapper = await deployContract(
+    web3,
+    abijson.contracts["contracts/InventoryTokenWrapper.sol:SunflowerLandTokenWrapper"],
+    TestAccount.TEAM.address,
+    [inventory.options.address]
+  );
+
   const session = await deployContract(
     web3,
     abijson.contracts["contracts/Sessions.sol:SunflowerLandSession"],
     TestAccount.TEAM.address,
-    [inventory.options.address, token.options.address, farm.options.address]
+    [inventory.options.address, token.options.address, farm.options.address, tokenWrapper.options.address]
   );
 
   const beta = await deployContract(
@@ -81,10 +90,10 @@ export async function deploySFLContracts(web3: Web3) {
       .send({ from: TestAccount.TEAM.address }),
     inventory.methods
       .addGameRole(session.options.address)
-      .send({ from: TestAccount.TEAM.address }),
+      .send({ from: TestAccount.TEAM.address })
   ]);
 
-  return { session, farm, token, inventory, beta, wishingWell };
+  return { session, farm, token, inventory, beta, wishingWell, tokenWrapper };
 }
 
 export async function deployWishingWellContracts(web3: Web3) {
@@ -129,4 +138,38 @@ async function deployContract(
       gasPrice: await web3.eth.getGasPrice(),
       gas: gasLimit,
     });
+}
+
+
+function decimalToHex(decimal: number) {
+  const padding = 2
+  var hexNumber = Number(decimal).toString(16);
+
+  while (hexNumber.length < padding) {
+      hexNumber = "0" + hexNumber;
+  }
+
+  return hexNumber;
+}
+
+const calculateBytes32 = (str: string) => {
+  const stringAsHex = web3Utils.utf8ToHex(str).substring(2);
+  const stringLength = stringAsHex.length;
+  const zeroPadding = 62 - stringLength;
+  if (zeroPadding < 0) {
+    throw new Error(`${str} length greather than 32.`);
+  }
+  let stringZeroPadding = '0'.repeat(zeroPadding);
+  const stringLengthAsHex = decimalToHex(stringLength);
+  
+  return `${stringAsHex}${stringZeroPadding}${stringLengthAsHex}`;
+}
+
+// Helper for Wrapped1155 To ERC20
+export const getTokenBytecode = (tokenName: string, tokenSymbol: string, decimals: number) => {
+  return `0x${calculateBytes32(tokenName)}${calculateBytes32(tokenSymbol)}${decimalToHex(decimals)}`;
+}
+
+export const concatTokenBytecodes = (tokenBytecodeA: string, tokenBytecodeB: string) => {
+  return tokenBytecodeA.concat(tokenBytecodeB.substring(2));
 }
