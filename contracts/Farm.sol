@@ -20,6 +20,7 @@ contract SunflowerLand is ERC721Enumerable, Pausable, GameOwner {
      * This enables the NFT to actually own the resources and tokens
     */
     mapping (uint => address) farms;
+    mapping (uint => uint) minted;
 
     string private baseURI = "https://sunflower-land.com/play/nfts/farm/";
 
@@ -53,6 +54,7 @@ contract SunflowerLand is ERC721Enumerable, Pausable, GameOwner {
         // Create identifiable farm contract
         FarmHolder farm = new FarmHolder(this, tokenId);
         farms[tokenId] = address(farm);
+        minted[tokenId] = block.timestamp;
 
         emit LandCreated(account, address(farm), tokenId);
 
@@ -121,6 +123,7 @@ contract SunflowerLand is ERC721Enumerable, Pausable, GameOwner {
         super._beforeTokenTransfer(from, to, tokenId);
 
         require(!paused(), "ERC721Pausable: token transfer while paused");
+        require(minted[tokenId] + 7 days <= block.timestamp, "Farm maturation needed");
     }
 }
 
