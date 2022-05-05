@@ -1,7 +1,7 @@
 import Web3 from "web3";
-import { toWei } from "web3-utils";
+import { toWei, fromWei, AbiItem, keccak256 } from "web3-utils";
 import { encodeSyncFunction, SyncArgs } from "../src/signatures";
-import { deploySFLContracts, gasLimit, TestAccount } from "./test-support";
+import { deploySFLContracts, gasLimit, TestAccount, getTokenBytecode, concatTokenBytecodes } from "./test-support";
 
 describe("Session contract", () => {
   function increaseTime(web3: any, seconds: number) {
@@ -14,7 +14,7 @@ describe("Session contract", () => {
           params: [seconds],
           id: id,
         },
-        (err1) => {
+        (err1: any) => {
           if (err1) return reject(err1);
 
           web3.currentProvider.send(
@@ -23,7 +23,7 @@ describe("Session contract", () => {
               method: "evm_mine",
               id: id + 1,
             },
-            (err2, res) => {
+            (err2: any, res: any) => {
               return err2 ? reject(err2) : resolve(res);
             }
           );
@@ -37,7 +37,7 @@ describe("Session contract", () => {
 
     it("requires the transaction is submitted before the deadline", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session } = await deploySFLContracts(web3);
 
@@ -55,7 +55,7 @@ describe("Session contract", () => {
         mintAmounts: [],
         burnIds: [],
         burnAmounts: [],
-        tokens: 10,
+        tokens: 10
       });
 
       const result = session.methods
@@ -74,7 +74,7 @@ describe("Session contract", () => {
 
     it("requires the session ID matches", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session } = await deploySFLContracts(web3);
 
@@ -108,7 +108,7 @@ describe("Session contract", () => {
 
     it("requires the sender owns the farm", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -151,7 +151,7 @@ describe("Session contract", () => {
 
     it("mints items for a farm", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm, inventory, token } = await deploySFLContracts(
         web3
@@ -229,7 +229,7 @@ describe("Session contract", () => {
 
     it("requires the mint IDs are in the signature", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -284,7 +284,7 @@ describe("Session contract", () => {
 
     it("burns items for a farm", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm, inventory, token } = await deploySFLContracts(
         web3
@@ -355,7 +355,7 @@ describe("Session contract", () => {
 
     it("requires the burn IDs are in the signature", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -409,7 +409,7 @@ describe("Session contract", () => {
 
     it("requires a new the session ID", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm, inventory, token } = await deploySFLContracts(
         web3
@@ -511,7 +511,7 @@ describe("Session contract", () => {
 
     it("requires a sufficient fee", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -556,7 +556,7 @@ describe("Session contract", () => {
 
     it("takes the fee", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -604,7 +604,7 @@ describe("Session contract", () => {
 
     it("throttles the sync method", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -671,7 +671,7 @@ describe("Session contract", () => {
 
     it("requires the transaction is submitted before the deadline", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session } = await deploySFLContracts(web3);
 
@@ -688,7 +688,7 @@ describe("Session contract", () => {
         ids: [],
         amounts: [],
         sfl: 10,
-        tax: 50,
+        tax: 50
       });
 
       const result = session.methods
@@ -706,7 +706,7 @@ describe("Session contract", () => {
 
     it("requires the session ID matches", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session } = await deploySFLContracts(web3);
 
@@ -720,7 +720,7 @@ describe("Session contract", () => {
         ids: [],
         amounts: [],
         sfl: 10,
-        tax: 50,
+        tax: 50
       });
 
       const result = session.methods
@@ -738,7 +738,7 @@ describe("Session contract", () => {
 
     it("requires the sender owns the farm", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -761,7 +761,7 @@ describe("Session contract", () => {
         ids: [],
         amounts: [],
         sfl: 10,
-        tax: 50,
+        tax: 50
       });
 
       const result = session.methods
@@ -779,9 +779,9 @@ describe("Session contract", () => {
 
     it("withdraws items for a farm", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
-      const { session, farm, inventory, token } = await deploySFLContracts(
+      const { session, farm, inventory, token} = await deploySFLContracts(
         web3
       );
 
@@ -795,14 +795,15 @@ describe("Session contract", () => {
         .getFarm(1)
         .call({ from: TestAccount.PLAYER.address });
 
-      // Mint some items to the farm address
+      // Mint some tokens to the farm address
       await token.methods.gameMint(farmNFT.account, 100).send({
         from: TestAccount.TEAM.address,
         gasPrice: await web3.eth.getGasPrice(),
         gas: gasLimit,
       });
 
-      await inventory.methods
+      // Mint inventory items to the farm address
+      await inventory.methods                    
         .gameMint(farmNFT.account, [1], [700], web3.utils.keccak256("randomID"))
         .send({
           from: TestAccount.TEAM.address,
@@ -824,7 +825,7 @@ describe("Session contract", () => {
         ids: [1],
         amounts: [500],
         sfl,
-        tax,
+        tax
       });
 
       await session.methods
@@ -846,7 +847,7 @@ describe("Session contract", () => {
         .balanceOf(farmNFT.account, 1)
         .call({ from: TestAccount.PLAYER.address });
       expect(farmInventory).toEqual("200");
-
+      
       // Expect player to only have the taxed amount
       const amount = sfl * (1 - tax / 1000);
 
@@ -865,7 +866,7 @@ describe("Session contract", () => {
 
     it("requires the tax is in the signature", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm } = await deploySFLContracts(web3);
 
@@ -888,7 +889,7 @@ describe("Session contract", () => {
         ids: [],
         amounts: [],
         sfl: 10,
-        tax: 10,
+        tax: 10
       });
 
       const result = session.methods
@@ -906,9 +907,9 @@ describe("Session contract", () => {
 
     it("requires a new the session ID", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
-      const { session, farm, inventory, token } = await deploySFLContracts(
+      const { session, farm, inventory, token} = await deploySFLContracts(
         web3
       );
 
@@ -940,7 +941,7 @@ describe("Session contract", () => {
         ids: [],
         amounts: [],
         sfl: 60,
-        tax: 50,
+        tax: 50
       });
 
       await session.methods
@@ -979,7 +980,7 @@ describe("Session contract", () => {
         ids: [],
         amounts: [],
         sfl: 60,
-        tax: 50,
+        tax: 50
       });
 
       await session.methods
@@ -999,7 +1000,7 @@ describe("Session contract", () => {
 
     it("takes the SFL tax", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm, token, wishingWell } = await deploySFLContracts(
         web3
@@ -1037,11 +1038,11 @@ describe("Session contract", () => {
         ids: [],
         amounts: [],
         sfl,
-        tax,
+        tax
       });
 
       await session.methods
-        .withdraw(signature, sessionId, validDeadline, 1, [], [], sfl, tax)
+        .withdraw(signature, sessionId, validDeadline, 1, [], [], sfl, 50)
         .send({
           from: TestAccount.PLAYER.address,
           gasPrice: await web3.eth.getGasPrice(),
@@ -1068,7 +1069,7 @@ describe("Session contract", () => {
 
     it("withdraws multiple times", async () => {
       const web3 = new Web3(
-        new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
       );
       const { session, farm, token, wishingWell } = await deploySFLContracts(
         web3
@@ -1106,11 +1107,11 @@ describe("Session contract", () => {
         ids: [],
         amounts: [],
         sfl,
-        tax,
+        tax
       });
 
       await session.methods
-        .withdraw(signature, sessionId, validDeadline, 1, [], [], sfl, tax)
+        .withdraw(signature, sessionId, validDeadline, 1, [], [], sfl, 50)
         .send({
           from: TestAccount.PLAYER.address,
           gasPrice: await web3.eth.getGasPrice(),
@@ -1160,7 +1161,7 @@ describe("Session contract", () => {
             "uint256[]",
             "uint256[]",
             "uint256",
-            "uint256",
+            "uint256"
           ],
           [
             sessionId,
@@ -1170,7 +1171,472 @@ describe("Session contract", () => {
             ids as any,
             amounts as any,
             sfl as any,
-            tax as any,
+            tax as any
+          ]
+        )
+      );
+    }
+
+    async function sign(web3: Web3, args: SyncArgs) {
+      const sha = encodeSyncFunction(web3, args);
+      const { signature } = await web3.eth.accounts.sign(
+        sha,
+        TestAccount.TEAM.privateKey
+      );
+
+      return signature;
+    }
+  });
+
+  describe("withdraw resources", () => {
+    const validDeadline = 10000000000000;
+
+    it("requires the transaction is submitted before the deadline", async () => {
+      const web3 = new Web3(
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
+      );
+      const { session } = await deploySFLContracts(web3);
+
+      const sessionId = web3.utils.keccak256("0");
+
+      // 10 seconds to late :(
+      const deadline = Math.floor(Date.now() / 1000 - 10);
+
+      const signature = await sign(web3, {
+        sessionId,
+        deadline,
+        sender: TestAccount.PLAYER.address,
+        farmId: 1,
+        ids: [],
+        amounts: [],
+        itemData: "0x"
+      });
+
+    const result = session.methods
+      .withdrawResources(signature, sessionId, deadline, 1, [], [], "0x")
+      .send({
+        from: TestAccount.PLAYER.address,
+        gasPrice: await web3.eth.getGasPrice(),
+        gas: gasLimit,
+      });
+
+      await expect(
+        result.catch((e: Error) => Promise.reject(e.message))
+      ).rejects.toContain("SunflowerLand: Deadline Passed");
+    });
+
+    it("requires the session ID matches", async () => {
+      const web3 = new Web3(
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
+      );
+      const { session } = await deploySFLContracts(web3);
+
+      const sessionId = web3.utils.keccak256("randomID");
+
+      const signature = await sign(web3, {
+        sessionId,
+        deadline: validDeadline,
+        sender: TestAccount.PLAYER.address,
+        farmId: 1,
+        ids: [],
+        amounts: [],
+        itemData: "0x"
+      });
+
+      const result = session.methods
+        .withdrawResources(signature, sessionId, validDeadline, 1, [], [], "0x")
+        .send({
+          from: TestAccount.PLAYER.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+
+      await expect(
+        result.catch((e: Error) => Promise.reject(e.message))
+      ).rejects.toContain("SunflowerLand: Session has changed");
+    });
+
+    it("requires the sender owns the farm", async () => {
+      const web3 = new Web3(
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
+      );
+      const { session, farm } = await deploySFLContracts(web3);
+
+      // Mint it to the team address (not the player)
+      await farm.methods.mint(TestAccount.TEAM.address).send({
+        from: TestAccount.TEAM.address,
+        gasPrice: await web3.eth.getGasPrice(),
+        gas: gasLimit,
+      });
+
+      const sessionId = await session.methods
+        .getSessionId(1)
+        .call({ from: TestAccount.PLAYER.address });
+
+      const signature = await sign(web3, {
+        sessionId,
+        deadline: validDeadline,
+        sender: TestAccount.PLAYER.address,
+        farmId: 1,
+        ids: [],
+        amounts: [],
+        itemData: "0x"
+      });
+
+      const result = session.methods
+        .withdrawResources(signature, sessionId, validDeadline, 1, [], [], "0x")
+        .send({
+          from: TestAccount.PLAYER.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+
+      await expect(
+        result.catch((e: Error) => Promise.reject(e.message))
+      ).rejects.toContain("SunflowerLand: You do not own this farm");
+    });
+
+    it("withdraws wrapped tokens for a farm", async () => {
+      const web3 = new Web3(
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
+      );
+
+      const { session, farm, inventory, tokenWrapper } = await deploySFLContracts(
+        web3
+      );
+
+      await farm.methods.mint(TestAccount.PLAYER.address).send({
+        from: TestAccount.TEAM.address,
+        gasPrice: await web3.eth.getGasPrice(),
+        gas: gasLimit,
+      });
+
+      const farmNFT = await farm.methods
+        .getFarm(1)
+        .call({ from: TestAccount.PLAYER.address });
+
+      // Mint inventory items to the farm address
+      await inventory.methods                    
+        .gameMint(farmNFT.account, [1], [700], web3.utils.keccak256("randomID"))
+        .send({
+          from: TestAccount.TEAM.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+
+      const wrapped1155Name = "TokenName";
+      const wrapped1155Symbol = "TKN";
+      const wrapped1155Decimals = 18;
+      const tokenData = getTokenBytecode(wrapped1155Name, wrapped1155Symbol, wrapped1155Decimals);
+
+      // Deploy Wrapped Tokens of items
+      await tokenWrapper.methods
+        .gameDeployWrappedToken(1, tokenData)
+        .send({
+          from: TestAccount.TEAM.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+
+      const sessionId = await session.methods
+        .getSessionId(1)
+        .call({ from: TestAccount.PLAYER.address });
+
+      const signature = await sign(web3, {
+        sessionId,
+        deadline: validDeadline,
+        sender: TestAccount.PLAYER.address,
+        farmId: 1,
+        ids: [1],
+        amounts: [500],
+        itemData: tokenData
+      });
+
+      await session.methods
+        .withdrawResources(
+          signature, 
+          sessionId, 
+          validDeadline, 
+          1, [1], [500], 
+          tokenData)
+        .send({
+          from: TestAccount.PLAYER.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+
+      // Farm inventory is subtracted
+      const farmInventory = await inventory.methods
+        .balanceOf(farmNFT.account, 1)
+        .call({ from: TestAccount.PLAYER.address });
+      expect(farmInventory).toEqual("200");
+
+      // TokenWrapper inventory is increased
+      const wrapperInventory = await inventory.methods
+        .balanceOf(tokenWrapper.options.address, [1])
+        .call({ from: TestAccount.PLAYER.address });
+      expect(wrapperInventory).toEqual("500");
+
+      // Player WrappedTokens are increased
+      const playerWrappedTokens = await tokenWrapper.methods
+        .balanceOf(TestAccount.PLAYER.address, 1, tokenData)
+        .call({from: TestAccount.PLAYER.address});
+      expect(playerWrappedTokens).toEqual("500");
+
+    });
+
+    it("requires a new session ID", async () => {
+      const web3 = new Web3(
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
+      );
+      const { session, farm, inventory, tokenWrapper} = await deploySFLContracts(
+        web3
+      );
+
+      await farm.methods.mint(TestAccount.PLAYER.address).send({
+        from: TestAccount.TEAM.address,
+        gasPrice: await web3.eth.getGasPrice(),
+        gas: gasLimit,
+      });
+
+      const farmNFT = await farm.methods
+        .getFarm(1)
+        .call({ from: TestAccount.PLAYER.address });
+
+      await inventory.methods
+        .gameMint(farmNFT.account, [1], [500], web3.utils.keccak256("randomID"))
+        .send({
+        from: TestAccount.TEAM.address,
+        gasPrice: await web3.eth.getGasPrice(),
+        gas: gasLimit,
+      });
+
+      const tokenData = getTokenBytecode("WrappedToken", "WTKN", 18);
+
+      await tokenWrapper.methods
+        .gameDeployWrappedToken(1, tokenData)
+        .send({
+          from: TestAccount.TEAM.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+
+      const sessionId = await session.methods
+        .getSessionId(1)
+        .call({ from: TestAccount.PLAYER.address });
+
+      const signature = await sign(web3, {
+        sessionId,
+        deadline: validDeadline,
+        sender: TestAccount.PLAYER.address,
+        farmId: 1,
+        ids: [1],
+        amounts: [100],
+        itemData: tokenData
+      });
+
+      await session.methods
+        .withdrawResources(signature, sessionId, validDeadline, 1, [1], [100], tokenData)
+        .send({
+          from: TestAccount.PLAYER.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+
+      // Avoid throttled method
+      await increaseTime(web3, 60 + 1);
+
+      // Try again with same session ID
+      const result = session.methods
+        .withdrawResources(signature, sessionId, validDeadline, 1, [1], [100], tokenData)
+        .send({
+          from: TestAccount.PLAYER.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+
+      await expect(
+        result.catch((e: Error) => Promise.reject(e.message))
+      ).rejects.toContain("SunflowerLand: Session has changed");
+
+      const newSessionId = await session.methods
+        .getSessionId(1)
+        .call({ from: TestAccount.PLAYER.address });
+
+      const newSignature = await sign(web3, {
+        sessionId: newSessionId,
+        deadline: validDeadline,
+        sender: TestAccount.PLAYER.address,
+        farmId: 1,
+        ids: [1],
+        amounts: [100],
+        itemData: tokenData
+      });
+
+      await session.methods
+        .withdrawResources(newSignature, newSessionId, validDeadline, 1, [1], [100], tokenData)
+        .send({
+          from: TestAccount.PLAYER.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+
+      const wrappedTokenBalance = await tokenWrapper.methods
+        .balanceOf(TestAccount.PLAYER.address, 1, tokenData)
+        .call({ from: TestAccount.PLAYER.address });
+
+      expect(wrappedTokenBalance).toEqual("200");
+    });
+
+    it("withdraws multiple wrapped tokens for a farm", async () => {
+      const web3 = new Web3(
+        new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
+      );
+
+      const { session, farm, inventory, tokenWrapper } = await deploySFLContracts(
+        web3
+      );
+
+      await farm.methods.mint(TestAccount.PLAYER.address).send({
+        from: TestAccount.TEAM.address,
+        gasPrice: await web3.eth.getGasPrice(),
+        gas: gasLimit,
+      });
+
+      const farmNFT = await farm.methods
+        .getFarm(1)
+        .call({ from: TestAccount.PLAYER.address });
+
+      // Mint inventory items to the farm address
+      await inventory.methods                    
+        .gameMint(farmNFT.account, [1, 2], [700, 400], web3.utils.keccak256("randomID"))
+        .send({
+          from: TestAccount.TEAM.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+
+      const tokenData1 = getTokenBytecode("Token1", "TKN1", 18);
+      const tokenData2 = getTokenBytecode("Token2", "TKN2", 18);
+
+      const allTokensData = concatTokenBytecodes(tokenData1, tokenData2);
+
+      // Deploy wrapped tokens of items
+      await tokenWrapper.methods
+        .gameDeployWrappedToken(1, tokenData1)
+        .send({
+          from: TestAccount.TEAM.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+      await tokenWrapper.methods
+        .gameDeployWrappedToken(2, tokenData2)
+        .send({
+          from: TestAccount.TEAM.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+
+      const sessionId = await session.methods
+        .getSessionId(1)
+        .call({ from: TestAccount.PLAYER.address });
+
+      const signature = await sign(web3, {
+        sessionId,
+        deadline: validDeadline,
+        sender: TestAccount.PLAYER.address,
+        farmId: 1,
+        ids: [1, 2],
+        amounts: [500, 250],
+        itemData: allTokensData
+      });
+
+      await session.methods
+        .withdrawResources(
+          signature, 
+          sessionId, 
+          validDeadline, 
+          1, [1, 2], [500, 250], 
+          allTokensData)
+        .send({
+          from: TestAccount.PLAYER.address,
+          gasPrice: await web3.eth.getGasPrice(),
+          gas: gasLimit,
+        });
+
+      // Farm inventory is subtracted
+      {
+        const farmInventory = await inventory.methods
+          .balanceOf(farmNFT.account, 1)
+          .call({ from: TestAccount.PLAYER.address });
+        expect(farmInventory).toEqual("200");
+      }
+      {
+        const farmInventory = await inventory.methods
+          .balanceOf(farmNFT.account, 2)
+          .call({ from: TestAccount.PLAYER.address });
+        expect(farmInventory).toEqual("150");
+      }
+      
+      // Wrapper inventory is increased
+      {
+        const wrapperInventory = await inventory.methods
+          .balanceOf(tokenWrapper.options.address, [1])
+          .call({ from: TestAccount.PLAYER.address });
+        expect(wrapperInventory).toEqual("500");
+      }
+      {
+        const wrapperInventory = await inventory.methods
+          .balanceOf(tokenWrapper.options.address, [2])
+          .call({ from: TestAccount.PLAYER.address });
+        expect(wrapperInventory).toEqual("250");
+      }
+      
+      const playerWrappedTokens1 = await tokenWrapper.methods
+        .balanceOf(TestAccount.PLAYER.address, 1, tokenData1)
+        .call({from: TestAccount.PLAYER.address});
+      expect(playerWrappedTokens1).toEqual("500");
+
+      const playerWrappedTokens2 = await tokenWrapper.methods
+        .balanceOf(TestAccount.PLAYER.address, 2, tokenData2)
+        .call({from: TestAccount.PLAYER.address});
+      expect(playerWrappedTokens2).toEqual("250");
+
+    });
+
+    type SyncArgs = {
+      sessionId: string;
+      deadline: number;
+      sender: string;
+      farmId: number;
+      ids: number[];
+      amounts: number[];
+      itemData: string;
+    };
+
+    function encodeSyncFunction(
+      web3: Web3,
+      { sessionId, deadline, sender, farmId, ids, amounts, itemData }: SyncArgs
+    ) {
+      return web3.utils.keccak256(
+        web3.eth.abi.encodeParameters(
+          [
+            "bytes32",
+            "uint256",
+            "address",
+            "uint256",
+            "uint256[]",
+            "uint256[]",
+            "bytes"
+          ],
+          [
+            sessionId,
+            deadline.toString(),
+            sender,
+            farmId.toString(),
+            ids as any,
+            amounts as any,
+            itemData as any
           ]
         )
       );

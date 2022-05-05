@@ -12,6 +12,7 @@ export type WithdrawArgs = {
   amounts: string[];
   sfl: string;
   tax: number;
+  itemData: string;
 };
 
 export function encodeWithdrawFunction({
@@ -22,7 +23,7 @@ export function encodeWithdrawFunction({
   ids,
   amounts,
   sfl,
-  tax,
+  tax
 }: WithdrawArgs) {
   const web3 = new Web3();
   return web3.utils.keccak256(
@@ -35,7 +36,7 @@ export function encodeWithdrawFunction({
         "uint256[]",
         "uint256[]",
         "uint256",
-        "uint256",
+        "uint256"
       ],
       [
         sessionId,
@@ -45,7 +46,7 @@ export function encodeWithdrawFunction({
         ids as any,
         amounts as any,
         sfl as any,
-        tax as any,
+        tax as any
       ]
     )
   );
@@ -65,14 +66,14 @@ export type SyncArgs = {
 
 export function encodeSyncFunction({
   sessionId,
-  deadline,
-  sender,
+  tokens,
   farmId,
   mintIds,
   mintAmounts,
+  sender,
   burnIds,
   burnAmounts,
-  tokens,
+  deadline
 }: SyncArgs) {
   const web3 = new Web3();
   return web3.utils.keccak256(
@@ -86,7 +87,7 @@ export function encodeSyncFunction({
         "address",
         "uint256[]",
         "uint256[]",
-        "uint",
+        "uint"
       ],
       [
         sessionId,
@@ -97,7 +98,7 @@ export function encodeSyncFunction({
         sender,
         burnIds,
         burnAmounts,
-        deadline,
+        deadline
       ]
     )
   );

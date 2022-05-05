@@ -26,7 +26,7 @@ describe("Wishing Well contract", () => {
           params: [seconds],
           id: id,
         },
-        (err1) => {
+        (err1: any) => {
           if (err1) return reject(err1);
 
           web3.currentProvider.send(
@@ -35,7 +35,7 @@ describe("Wishing Well contract", () => {
               method: "evm_mine",
               id: id + 1,
             },
-            (err2, res) => {
+            (err2: any, res: any) => {
               return err2 ? reject(err2) : resolve(res);
             }
           );
@@ -46,7 +46,7 @@ describe("Wishing Well contract", () => {
 
   it("makes a wish", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const { wishingWell, liquidityTestToken } =
       await deployWishingWellContracts(web3);
@@ -116,7 +116,7 @@ describe("Wishing Well contract", () => {
 
   it("makes a user wait after making a wish", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const { wishingWell, liquidityTestToken, token, farm } =
       await deployWishingWellContracts(web3);
@@ -191,7 +191,7 @@ describe("Wishing Well contract", () => {
 
   it("ensures the user has wished tokens in the well", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const { wishingWell, liquidityTestToken, token } =
       await deployWishingWellContracts(web3);
@@ -234,7 +234,7 @@ describe("Wishing Well contract", () => {
 
   it("ensures transaction is done before deadline", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const { wishingWell, liquidityTestToken, token } =
       await deployWishingWellContracts(web3);
@@ -262,7 +262,7 @@ describe("Wishing Well contract", () => {
 
   it("ensures oracle has verified transaction", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const { wishingWell, liquidityTestToken, token } =
       await deployWishingWellContracts(web3);
@@ -306,7 +306,7 @@ describe("Wishing Well contract", () => {
 
   it("collects tokens based on share in well", async () => {
     const web3 = new Web3(
-      new Web3.providers.HttpProvider(process.env.ETH_NETWORK)
+      new Web3.providers.HttpProvider(process.env.ETH_NETWORK?process.env.ETH_NETWORK:"")
     );
     const { wishingWell, liquidityTestToken, token, farm } =
       await deployWishingWellContracts(web3);
