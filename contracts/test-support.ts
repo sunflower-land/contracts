@@ -87,6 +87,38 @@ export async function deploySFLContracts(web3: Web3) {
   return { session, farm, token, inventory, beta, wishingWell };
 }
 
+export async function deployMutantCropContracts(web3: Web3) {
+  const [inventory, farm] = await Promise.all([
+    deployContract(
+      web3,
+      abijson.contracts["contracts/Inventory.sol:SunflowerLandInventory"],
+      TestAccount.TEAM.address
+    ),
+    deployContract(
+      web3,
+      abijson.contracts["contracts/Farm.sol:SunflowerLand"],
+      TestAccount.TEAM.address
+    ),
+  ]);
+
+  const mutantCrops = await deployContract(
+    web3,
+    abijson.contracts["contracts/MutantCrops.sol:MutantCrops"],
+    TestAccount.TEAM.address,
+    [inventory.options.address, farm.options.address]
+  );
+
+  await inventory.methods
+    .addGameRole(mutantCrops.options.address)
+    .send({ from: TestAccount.TEAM.address });
+
+  await farm.methods
+    .addGameRole(TestAccount.TEAM.address)
+    .send({ from: TestAccount.TEAM.address });
+
+  return { farm, inventory, mutantCrops };
+}
+
 export async function deployWishingWellContracts(web3: Web3) {
   const [token, liquidityTestToken, farm] = await Promise.all([
     deployContract(

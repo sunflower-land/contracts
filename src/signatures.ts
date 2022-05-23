@@ -103,6 +103,28 @@ export function encodeSyncFunction({
   );
 }
 
+export type MutantCropArgs = {
+  deadline: number;
+  sender: string;
+  farmId: number;
+  cropId: number;
+};
+
+export function encodeMutantCropFunction({
+  deadline,
+  sender,
+  farmId,
+  cropId,
+}: MutantCropArgs) {
+  const web3 = new Web3();
+  return web3.utils.keccak256(
+    web3.eth.abi.encodeParameters(
+      ["uint256", "address", "uint256", "uint256"],
+      [deadline, sender, cropId, farmId]
+    )
+  );
+}
+
 export type WishArgs = {
   deadline: number;
   sender: string;
